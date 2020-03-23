@@ -6,6 +6,8 @@ import br.com.softcube.microservices.fornecedor.models.PedidoItem;
 import br.com.softcube.microservices.fornecedor.models.Produto;
 import br.com.softcube.microservices.fornecedor.repositories.PedidoRepository;
 import br.com.softcube.microservices.fornecedor.repositories.ProdutoRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +18,8 @@ import java.util.stream.Collectors;
 @Service
 public class PedidoService {
 
+    private static final Logger LOG = LoggerFactory.getLogger(PedidoService.class);
+
     @Autowired
     private PedidoRepository pedidoRepository;
 
@@ -23,10 +27,14 @@ public class PedidoService {
     private ProdutoRepository produtoRepository;
 
     public Pedido realizaPedido(List<ItemPedidoDTO> itensPedido) {
+        LOG.info("Convertendo itens do pedido para objeto do modelo");
         List<PedidoItem> itens = convertToPedidoItem(itensPedido);
+        LOG.info("Convertido {}", itens);
 
+        LOG.info("Criando o pedido");
         Pedido pedido = new Pedido(itens);
         pedido.setTempoPreparo(itens.size());
+        LOG.info("Pedido criado {}", pedido);
 
         return pedidoRepository.save(pedido);
     }
